@@ -155,13 +155,11 @@ function buildPricingCard(bike) {
 function renderFleet(bikes) {
   const sportGrid   = document.getElementById("sportbikesGrid");
   const nakedGrid   = document.getElementById("nakedbikesGrid");
-  const pricingGrid = document.getElementById("pricingGrid");
   const countEl     = document.getElementById("availableCount");
   if (!sportGrid) return;
 
-  sportGrid.innerHTML   = bikes.filter(b => b.type === "sportbike").map(buildBikeCard).join("");
-  nakedGrid.innerHTML   = bikes.filter(b => b.type === "naked").map(buildBikeCard).join("");
-  pricingGrid.innerHTML = bikes.map(buildPricingCard).join("");
+  sportGrid.innerHTML = bikes.filter(b => b.type === "sportbike").map(buildBikeCard).join("");
+  nakedGrid.innerHTML = bikes.filter(b => b.type === "naked").map(buildBikeCard).join("");
   if (countEl) countEl.textContent = bikes.filter(b => b.status === "available").length;
 }
 
