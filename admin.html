@@ -276,7 +276,7 @@
       </div>
     </div>
 
-    <!-- Seed prompt -->
+    <!-- Seed prompt (empty DB) -->
     <div id="seedPrompt">
       <p>Your database is empty. Add your bikes manually or load the default fleet.</p>
       <button class="btn-seed" id="seedBtn" onclick="seedData()">🏍️ Load Default Fleet (7 bikes)</button>
@@ -285,7 +285,10 @@
     <!-- Bike list -->
     <div class="section-hdr">
       <h2>Fleet Management</h2>
-      <button class="btn-add" onclick="openAddModal()">+ Add New Bike</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-seed" id="reseedBtn" onclick="seedData()" title="Overwrites all bike data with latest defaults">🔄 Refresh Fleet Data</button>
+        <button class="btn-add" onclick="openAddModal()">+ Add New Bike</button>
+      </div>
     </div>
     <div id="bikeList"><p class="empty-msg">Loading bikes...</p></div>
 

@@ -242,11 +242,21 @@ ul    { list-style: none; }
 .spec-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
 .spec-value { font-size: 14px; font-weight: 700; margin-top: 2px; }
 
+/* Card inline rates */
+.card-rates-section { margin: 14px 0 4px; border-top: 1px solid var(--border); padding-top: 12px; }
+.card-rates-header { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 6px; }
+.card-rate-row { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.card-rate-dur   { font-size: 13px; font-weight: 600; }
+.card-rate-km    { font-size: 11px; color: var(--text-muted); }
+.card-rate-price { font-size: 13px; font-weight: 800; color: var(--red); text-align: right; }
+.card-deposit    { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+.card-deposit span { color: #22c55e; font-weight: 600; }
+
 .bike-card-footer {
   display: flex; align-items: center; justify-content: space-between;
-  padding-top: 16px; border-top: 1px solid var(--border); margin-top: auto;
+  padding-top: 14px; border-top: 1px solid var(--border); margin-top: 12px;
 }
-.bike-price { font-size: 22px; font-weight: 900; color: var(--red); letter-spacing: -0.02em; }
+.bike-price { font-size: 18px; font-weight: 900; color: var(--red); letter-spacing: -0.02em; }
 .bike-price span { font-size: 13px; font-weight: 500; color: var(--text-muted); }
 .btn-details {
   padding: 9px 20px; background: var(--dark); color: #fff;

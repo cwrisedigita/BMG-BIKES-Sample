@@ -63,7 +63,27 @@ function renderHeroGrid(bikes) {
 
 // ===================== FLEET =====================
 function buildBikeCard(bike) {
-  const imgEl = `<img src="${bike.image}" alt="${bike.name}" onerror="this.parentElement.innerHTML='<div class=\\'bike-card-img-placeholder\\'>🏍️</div>'">`;
+  const imgEl   = `<img src="${bike.image}" alt="${bike.name}" onerror="this.parentElement.innerHTML='<div class=\\'bike-card-img-placeholder\\'>🏍️</div>'">`;
+  const hasRates = bike.rates && bike.rates.length > 0;
+  const startPrice = hasRates ? Math.min(...bike.rates.map(r => r.price)) : bike.pricePerDay;
+
+  const ratesHTML = hasRates
+    ? bike.rates.map(r =>
+        `<div class="card-rate-row">
+          <span class="card-rate-dur">${r.duration}</span>
+          ${r.km ? `<span class="card-rate-km">${r.km} km</span>` : `<span class="card-rate-km"></span>`}
+          <span class="card-rate-price">&#8369;${Number(r.price).toLocaleString()}</span>
+        </div>`).join("")
+    : `<div class="card-rate-row">
+        <span class="card-rate-dur">Per Day</span>
+        <span class="card-rate-km"></span>
+        <span class="card-rate-price">&#8369;${Number(bike.pricePerDay).toLocaleString()}</span>
+      </div>`;
+
+  const depositHTML = bike.deposit
+    ? `<div class="card-deposit">&#8369;${Number(bike.deposit).toLocaleString()} deposit <span>(refundable)</span></div>`
+    : "";
+
   return `
     <div class="bike-card">
       <a href="bike.html?id=${bike.docId}" class="bike-card-img">${imgEl}</a>
@@ -78,9 +98,14 @@ function buildBikeCard(bike) {
           <div class="spec-item"><span class="spec-label">Color</span><span class="spec-value">${bike.color}</span></div>
           <div class="spec-item"><span class="spec-label">Mileage</span><span class="spec-value">${bike.mileage}</span></div>
         </div>
+        <div class="card-rates-section">
+          <div class="card-rates-header"><span>Duration</span><span>Limit</span><span>Rate</span></div>
+          ${ratesHTML}
+          ${depositHTML}
+        </div>
         <div class="bike-card-footer">
-          <div class="bike-price">&#8369;${Number(bike.pricePerDay).toLocaleString()}<span>/day</span></div>
-          <a href="bike.html?id=${bike.docId}" class="btn-details">See Details</a>
+          <div class="bike-price">From &#8369;${Number(startPrice).toLocaleString()}</div>
+          <a href="bike.html?id=${bike.docId}" class="btn-details">Full Details</a>
         </div>
       </div>
     </div>`;

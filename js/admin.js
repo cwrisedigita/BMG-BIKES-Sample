@@ -233,10 +233,10 @@ const SEED_BIKES = [
 ];
 
 async function seedData() {
-  if (!confirm("This will add 7 default bikes to your database. Continue?")) return;
-  const btn = document.getElementById("seedBtn");
-  btn.textContent = "Loading...";
-  btn.disabled    = true;
+  if (!confirm("This will overwrite all 7 default bikes with the latest data. Continue?")) return;
+  const btn1 = document.getElementById("seedBtn");
+  const btn2 = document.getElementById("reseedBtn");
+  [btn1, btn2].forEach(b => { if (b) { b.textContent = "Updating..."; b.disabled = true; } });
   try {
     for (let i = 0; i < SEED_BIKES.length; i++) {
       const { id, ...data } = SEED_BIKES[i];
@@ -244,10 +244,9 @@ async function seedData() {
         ...data, status: "available", availableFrom: null, order: i
       });
     }
-    btn.textContent = "✓ Done!";
+    [btn1, btn2].forEach(b => { if (b) b.textContent = "✓ Done!"; });
   } catch (err) {
-    alert("Seed error: " + err.message);
-    btn.textContent = "Load Default Fleet (7 bikes)";
-    btn.disabled    = false;
+    alert("Error: " + err.message);
+    [btn1, btn2].forEach(b => { if (b) { b.textContent = "Try Again"; b.disabled = false; } });
   }
 }
