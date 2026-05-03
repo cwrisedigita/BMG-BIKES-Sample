@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | BMG Big Bike Rentals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #0d0d0f;
+      --dark-2:   #141416;
+      --dark-3:   #1c1c1f;
+      --dark-4:   #242428;
+      --red:      #e8261a;
+      --red-h:    #c41f14;
+      --green:    #22c55e;
+      --text:     #f0f0f0;
+      --muted:    rgba(255,255,255,0.45);
+      --border:   rgba(255,255,255,0.08);
+      --radius:   12px;
+    }
+    html, body { height: 100%; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+    /* ===== LOGIN ===== */
+    #loginSection {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .login-box {
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 400px;
+    }
+    .login-logo { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+    .login-logo span { color: var(--red); }
+    .login-sub { color: var(--muted); font-size: 14px; margin-bottom: 36px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: var(--dark-3); border: 1px solid var(--border);
+      border-radius: 9px; padding: 12px 14px; color: var(--text);
+      font-family: inherit; font-size: 15px; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: rgba(255,255,255,0.3);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group select option { background: var(--dark-3); }
+    .error-msg { color: #f87171; font-size: 13px; margin-top: 8px; min-height: 18px; }
+    .btn-login {
+      width: 100%; background: var(--red); color: #fff; border: none;
+      border-radius: 9px; padding: 14px; font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s; margin-top: 8px;
+    }
+    .btn-login:hover { background: var(--red-h); }
+
+    /* ===== DASHBOARD ===== */
+    #dashboardSection { display: none; }
+    .admin-header {
+      background: var(--dark-2); border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 64px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 100;
+    }
+    .admin-header-logo { font-size: 18px; font-weight: 800; }
+    .admin-header-logo span { color: var(--red); }
+    .admin-header-right { display: flex; align-items: center; gap: 16px; }
+    .admin-user { font-size: 13px; color: var(--muted); }
+    .btn-logout {
+      background: var(--dark-3); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .btn-logout:hover { border-color: rgba(255,255,255,0.3); }
+    .btn-view-site {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-view-site:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+
+    .admin-body { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+    /* Stats */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+    .stat-box {
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; text-align: center;
+    }
+    .stat-box-num { font-size: 36px; font-weight: 900; margin-bottom: 4px; }
+    .stat-box-num.green { color: var(--green); }
+    .stat-box-num.red   { color: var(--red); }
+    .stat-box-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+
+    /* Section header */
+    .section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .section-hdr h2 { font-size: 20px; font-weight: 700; }
+    .btn-add {
+      background: var(--red); color: #fff; border: none; border-radius: 9px;
+      padding: 10px 20px; font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s; display: flex; align-items: center; gap: 8px;
+    }
+    .btn-add:hover { background: var(--red-h); }
+
+    /* Seed prompt */
+    #seedPrompt {
+      display: none; background: var(--dark-3); border: 1px dashed rgba(255,255,255,0.2);
+      border-radius: var(--radius); padding: 32px; text-align: center; margin-bottom: 24px;
+    }
+    #seedPrompt p { color: var(--muted); margin-bottom: 16px; }
+    .btn-seed {
+      background: var(--dark-4); border: 1px solid var(--border); color: var(--text);
+      border-radius: 9px; padding: 10px 20px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .btn-seed:hover { border-color: rgba(255,255,255,0.3); }
+
+    /* Bike list */
+    #bikeList { display: flex; flex-direction: column; gap: 12px; }
+    .empty-msg { color: var(--muted); text-align: center; padding: 40px; }
+
+    .admin-bike-card {
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 24px;
+      display: flex; align-items: center; gap: 20px;
+      transition: border-color 0.2s;
+    }
+    .admin-bike-card:hover { border-color: rgba(255,255,255,0.15); }
+    .admin-bike-card.booked { border-left: 3px solid var(--red); }
+    .admin-bike-card.available-card { border-left: 3px solid var(--green); }
+
+    .admin-bike-img {
+      width: 80px; height: 60px; border-radius: 8px; overflow: hidden;
+      background: var(--dark-3); flex-shrink: 0; display: flex;
+      align-items: center; justify-content: center; font-size: 24px;
+    }
+    .admin-bike-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .admin-bike-info { flex: 1; min-width: 0; }
+    .admin-bike-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .admin-bike-meta { font-size: 13px; color: var(--muted); }
+    .admin-bike-date { font-size: 12px; color: #fbbf24; margin-top: 4px; }
+
+    .status-badge {
+      display: inline-block; padding: 4px 12px; border-radius: 99px;
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .status-badge.available { background: rgba(34,197,94,0.15); color: var(--green); }
+    .status-badge.booked    { background: rgba(232,38,26,0.15);  color: var(--red); }
+
+    .admin-bike-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .btn-admin {
+      padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border); transition: all 0.2s;
+    }
+    .btn-book  { background: rgba(232,38,26,0.1);  color: var(--red);   border-color: rgba(232,38,26,0.3); }
+    .btn-book:hover  { background: rgba(232,38,26,0.2); }
+    .btn-avail { background: rgba(34,197,94,0.1);  color: var(--green); border-color: rgba(34,197,94,0.3); }
+    .btn-avail:hover { background: rgba(34,197,94,0.2); }
+    .btn-edit  { background: var(--dark-3); color: var(--text); }
+    .btn-edit:hover  { border-color: rgba(255,255,255,0.3); }
+    .btn-del   { background: transparent; color: var(--muted); }
+    .btn-del:hover   { color: var(--red); border-color: rgba(232,38,26,0.3); }
+
+    /* ===== MODAL ===== */
+    #bikeModal {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+      padding: 24px; backdrop-filter: blur(4px);
+    }
+    .modal-box {
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: 20px; width: 100%; max-width: 680px;
+      max-height: 90vh; overflow-y: auto; padding: 36px;
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .modal-header h3 { font-size: 20px; font-weight: 800; }
+    .btn-close {
+      background: var(--dark-3); border: 1px solid var(--border); color: var(--muted);
+      width: 36px; height: 36px; border-radius: 8px; font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .btn-close:hover { color: var(--text); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-section-title {
+      font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.08em; margin: 24px 0 12px; border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    .modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; }
+    .btn-cancel {
+      background: var(--dark-3); border: 1px solid var(--border); color: var(--text);
+      padding: 12px 24px; border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+    .btn-save {
+      background: var(--red); color: #fff; border: none;
+      padding: 12px 28px; border-radius: 9px; font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--red-h); }
+    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== DATE MODAL ===== */
+    #dateModal {
+      display: none; position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+      padding: 24px; backdrop-filter: blur(4px);
+    }
+    .date-modal-box {
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px; width: 100%; max-width: 400px;
+    }
+    .date-modal-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .date-modal-box p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+    .date-modal-footer { display: flex; gap: 12px; margin-top: 20px; }
+
+    @media (max-width: 600px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .admin-bike-card { flex-wrap: wrap; }
+      .admin-bike-actions { width: 100%; }
+      .admin-header { padding: 0 16px; }
+      .admin-body { padding: 24px 16px; }
+      .modal-box { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginSection">
+  <div class="login-box">
+    <div class="login-logo">BMG <span>Admin</span></div>
+    <div class="login-sub">Sign in to manage your fleet</div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" required>
+      </div>
+      <div class="error-msg" id="loginError"></div>
+      <button type="submit" class="btn-login">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dashboardSection">
+  <header class="admin-header">
+    <div class="admin-header-logo">BMG <span>Admin Panel</span></div>
+    <div class="admin-header-right">
+      <span class="admin-user" id="adminEmail"></span>
+      <a href="index.html" target="_blank" class="btn-view-site">View Site ↗</a>
+      <button class="btn-logout" id="logoutBtn">Log Out</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-box-num" id="statTotal">—</div>
+        <div class="stat-box-label">Total Bikes</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-num green" id="statAvail">—</div>
+        <div class="stat-box-label">Available</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-num red" id="statBooked">—</div>
+        <div class="stat-box-label">Currently Booked</div>
+      </div>
+    </div>
+
+    <!-- Seed prompt -->
+    <div id="seedPrompt">
+      <p>Your database is empty. Add your bikes manually or load the default fleet.</p>
+      <button class="btn-seed" id="seedBtn" onclick="seedData()">🏍️ Load Default Fleet (7 bikes)</button>
+    </div>
+
+    <!-- Bike list -->
+    <div class="section-hdr">
+      <h2>Fleet Management</h2>
+      <button class="btn-add" onclick="openAddModal()">+ Add New Bike</button>
+    </div>
+    <div id="bikeList"><p class="empty-msg">Loading bikes...</p></div>
+
+  </div>
+</div>
+
+<!-- ===== ADD / EDIT MODAL ===== -->
+<div id="bikeModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add New Bike</h3>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="bikeForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bike Name *</label>
+          <input type="text" id="fName" placeholder="e.g. Kawasaki ZX-10R" required>
+        </div>
+        <div class="form-group">
+          <label>Type *</label>
+          <select id="fType" required>
+            <option value="sportbike">Sportbike</option>
+            <option value="naked">Naked Bike</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Engine CC *</label>
+          <input type="number" id="fCc" placeholder="e.g. 998" required>
+        </div>
+        <div class="form-group">
+          <label>Price Per Day (₱) *</label>
+          <input type="number" id="fPrice" placeholder="e.g. 3500" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Year</label>
+          <input type="number" id="fYear" placeholder="e.g. 2024">
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <input type="text" id="fColor" placeholder="e.g. Black / Green">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Mileage</label>
+        <input type="text" id="fMileage" placeholder="e.g. 5,200 km">
+      </div>
+      <div class="form-group">
+        <label>Image Path or URL</label>
+        <input type="text" id="fImage" placeholder="images/bikes/filename.jpg or https://...">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="fDescription" placeholder="Short description of the bike..."></textarea>
+      </div>
+
+      <div class="form-section-title">Specifications</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Engine</label>
+          <input type="text" id="fEngine" placeholder="e.g. 998cc, Inline-4">
+        </div>
+        <div class="form-group">
+          <label>Power</label>
+          <input type="text" id="fPower" placeholder="e.g. 203 HP @ 13,200 rpm">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Torque</label>
+          <input type="text" id="fTorque" placeholder="e.g. 114 Nm @ 11,400 rpm">
+        </div>
+        <div class="form-group">
+          <label>Transmission</label>
+          <input type="text" id="fTransmission" placeholder="e.g. 6-speed">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Weight</label>
+          <input type="text" id="fWeight" placeholder="e.g. 207 kg">
+        </div>
+        <div class="form-group">
+          <label>Seat Height</label>
+          <input type="text" id="fSeatHeight" placeholder="e.g. 835 mm">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-save" id="saveBtn">Save Bike</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== BOOKED DATE MODAL ===== -->
+<div id="dateModal">
+  <div class="date-modal-box">
+    <h3>Mark as Booked</h3>
+    <p>When will this bike be available again? Leave blank if unknown.</p>
+    <div class="form-group">
+      <label>Available From (optional)</label>
+      <input type="text" id="dateInput" placeholder="e.g. May 20, 2026">
+    </div>
+    <div class="date-modal-footer">
+      <button class="btn-cancel" onclick="closeDateModal()">Cancel</button>
+      <button class="btn-save" onclick="confirmBooked()">Confirm Booked</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
