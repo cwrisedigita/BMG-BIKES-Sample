@@ -215,7 +215,7 @@ ul    { list-style: none; }
   background: var(--dark-3);
 }
 .bike-card-img img {
-  width: 100%; height: 100%; object-fit: contain; object-position: center;
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
   transition: transform 0.45s ease;
 }
 .bike-card:hover .bike-card-img img { transform: scale(1.06); }
@@ -385,7 +385,7 @@ ul    { list-style: none; }
   aspect-ratio: 3/2; border-radius: var(--radius); overflow: hidden;
   background: var(--dark-3);
 }
-.detail-hero-img img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.detail-hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
 .detail-content { padding: 72px 0; background: var(--bg); }
 .detail-grid { display: grid; grid-template-columns: 1fr 380px; gap: 56px; }
