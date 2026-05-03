@@ -43,6 +43,11 @@ function renderHeroGrid(bikes) {
       : "Available Now";
     const typeLabel = bike.type === "sportbike" ? "Sportbike" : "Naked Bike";
 
+    // Show the 24hr rate if available, otherwise fall back to pricePerDay
+    const dayRate = (bike.rates && bike.rates.find(r => r.duration === "24 hrs"))
+      ? bike.rates.find(r => r.duration === "24 hrs").price
+      : bike.pricePerDay;
+
     return `
       <a href="bike.html?id=${bike.docId}" class="hbc-card" style="animation-delay:${delay}s">
         <div class="hbc-img">
@@ -52,7 +57,7 @@ function renderHeroGrid(bikes) {
         <div class="hbc-info">
           <div class="hbc-row">
             <span class="hbc-type">${typeLabel}</span>
-            <span class="hbc-price">&#8369;${Number(bike.pricePerDay).toLocaleString()}<em>/day</em></span>
+            <span class="hbc-price">&#8369;${Number(dayRate).toLocaleString()}<em>/day</em></span>
           </div>
           <div class="hbc-name">${bike.name}</div>
           <div class="hbc-status ${isBkd ? "booked" : "available"}">${statusTxt}</div>
