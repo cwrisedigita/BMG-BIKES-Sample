@@ -88,16 +88,37 @@ function buildBikeCard(bike) {
 
 function buildPricingCard(bike) {
   const typeLabel = bike.type === "sportbike" ? "Sportbike" : "Naked Bike";
+  const rates     = bike.rates && bike.rates.length > 0 ? bike.rates : null;
+
+  const ratesHTML = rates
+    ? rates.map(r => `
+        <div class="pricing-tier">
+          <span class="tier-duration">${r.duration}</span>
+          ${r.km ? `<span class="tier-km">${r.km} km</span>` : `<span class="tier-km"></span>`}
+          <span class="tier-price">&#8369;${Number(r.price).toLocaleString()}</span>
+        </div>`).join("")
+    : `<div class="pricing-tier">
+        <span class="tier-duration">Per Day</span>
+        <span class="tier-km"></span>
+        <span class="tier-price">&#8369;${Number(bike.pricePerDay).toLocaleString()}</span>
+       </div>`;
+
+  const depositHTML = bike.deposit
+    ? `<div class="pricing-deposit">&#128176; &#8369;${Number(bike.deposit).toLocaleString()} security deposit <span>(refundable)</span></div>`
+    : "";
+
   return `
     <div class="pricing-card">
-      <div class="pricing-card-type">${typeLabel}</div>
-      <div class="pricing-card-name">${bike.name}</div>
-      <div class="pricing-card-price">&#8369;${Number(bike.pricePerDay).toLocaleString()}<span> / day</span></div>
-      <div class="pricing-card-details">
-        <div class="pricing-detail">${bike.cc}cc engine</div>
-        <div class="pricing-detail">${bike.color}</div>
-        <div class="pricing-detail">Year ${bike.year}</div>
+      <div class="pricing-card-top-row">
+        <div class="pricing-card-type">${typeLabel}</div>
+        <div class="pricing-card-cc">${bike.cc}cc</div>
       </div>
+      <div class="pricing-card-name">${bike.name}</div>
+      <div class="pricing-tiers-header">
+        <span>Duration</span><span>Limit</span><span>Rate</span>
+      </div>
+      <div class="pricing-tiers">${ratesHTML}</div>
+      ${depositHTML}
     </div>`;
 }
 
@@ -165,8 +186,18 @@ function renderDetail(bikes) {
         </div>
       </div>
       <div class="detail-sidebar"><div class="detail-sidebar-card">
-        <div class="detail-price-label">Rental Rate</div>
-        <div class="detail-price">&#8369;${Number(bike.pricePerDay).toLocaleString()}<span> / day</span></div>
+        <div class="detail-price-label">Rental Rates</div>
+        ${bike.rates && bike.rates.length > 0 ? `
+          <div class="detail-rates">
+            ${bike.rates.map(r => `
+              <div class="detail-rate-row">
+                <span class="detail-rate-duration">${r.duration}</span>
+                ${r.km ? `<span class="detail-rate-km">${r.km} km</span>` : ""}
+                <span class="detail-rate-price">&#8369;${Number(r.price).toLocaleString()}</span>
+              </div>`).join("")}
+          </div>
+          ${bike.deposit ? `<div class="detail-deposit">&#8369;${Number(bike.deposit).toLocaleString()} security deposit <span>(refundable)</span></div>` : ""}
+        ` : `<div class="detail-price">&#8369;${Number(bike.pricePerDay).toLocaleString()}<span> / day</span></div>`}
         ${availBlock}
         <a href="${FACEBOOK_URL}" target="_blank" class="btn btn-primary detail-book-btn">Book This Bike on Facebook</a>
         <div class="detail-sidebar-note">We'll confirm your dates via Messenger.</div>
